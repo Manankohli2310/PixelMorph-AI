@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Morph - Image Converter</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="icon" href="favicon.ico" type="image/x-ico">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta name="description" content="Convert your Image files to other formats such as PNG, JPG, WEBP, ICO etc. easily.">
+  
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="navbar-left">
+        <span class="heading">Pixel Morph</span>
+      </div>
+      
+      <div class="navbar-right">
+        <button>
+          <a href="index.html">Home</a>
+        </button>
+        <button>
+          <a href="mailto:manankohli38@gmail.com?subject=Contact&body=Hi, I wanted to Contact you.">Contact Us</a>
+        </button>
+      </div>
+      
+      <div class="navbar-1">
+        <div class="hamburger-menu">
+          <img class="line" src="Hamburger.png" alt="Menu">
+        </div>
+        <div class="dropdown-menu hidden">
+          <button>
+            <a href="index.html">Home</a>
+          </button>
+          <button>
+            <a href="mailto:manankohli38@gmail.com?subject=Contact&body=Hi, I wanted to Contact you.">Contact Us</a>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+  <div class="main-layout">
+    <div id="dragDropArea" class="drag-drop-area">
+      <div id="drag-drop-area-content" class="drag-drop-area-content">
+        Drag and Drop or Click to Select File
+      </div>
+      <input type="file" id="fileInput" hidden>
+    </div>
+
+    <div class="right-pane">
+      <h2>Select Format:</h2>
+      <div class="button-group">
+        <button class="option-btn" data-format="png">PNG</button>
+        <button class="option-btn" data-format="jpg">JPG</button>
+        <button class="option-btn" data-format="webp">WEBP</button>
+        <button class="option-btn" data-format="ico">ICO</button>
+        <button class="option-btn" data-format="tiff">TIFF</button>
+      </div>
+
+      <h2>Select Quality:</h2>
+      <div class="button-group">
+        <button class="option-btn" data-quality="1080p">1080p</button>
+        <button class="option-btn" data-quality="720p">720p</button>
+        <button class="option-btn" data-quality="480p">480p</button>
+      </div>
+
+      <button id="convertButton" class="convert-btn">CONVERT</button>
+    </div>
+  </div>
+  
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loader">
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <div id="thankYouSlide" class="thank-you-slide hidden">
+   <div class="thank-you-message"> <h2>Conversion Successful!</h2>
+    <button id="downloadButton" class="download-btn">Download File</button>
+    <button id="convertMoreButton" class="convert-more-btn">Convert More Files</button>
+  </div>
+  </div>
+
+  <script src="file.js"></script>
+</body>
+</html>

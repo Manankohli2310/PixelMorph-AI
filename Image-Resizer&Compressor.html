@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Morph - Image Resizer & Compressor</title>
+  <link rel="stylesheet" href="cnr.css">
+  <link rel="icon" href="favicon.ico" type="image/x-ico">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta name="description" content="Resize and Compress your images easily while adjusting the aspect ratio of image and the compressability factor of it.">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="navbar-left">
+        <span class="heading">Pixel Morph</span>
+      </div>
+      
+      <div class="navbar-right">
+        <button>
+          <a href="index.html">Home</a>
+        </button>
+        <button>
+          <a href="mailto:manankohli38@gmail.com?subject=Contact&body=Hi, I wanted to Contact you.">Contact Us</a>
+        </button>
+      </div>
+      
+      <div class="navbar-1">
+        <div class="hamburger-menu">
+          <img class="line" src="Hamburger.png" alt="Menu">
+        </div>
+        <div class="dropdown-menu hidden">
+          <button>
+            <a href="index.html">Home</a>
+          </button>
+          <button>
+            <a href="mailto:manankohli38@gmail.com?subject=Contact&body=Hi, I wanted to Contact you.">Contact Us</a>
+          </button>
+        </div>
+      </div>
+    </nav>
+    
+  </header>
+  <div class="main-layout">
+  <div class="container">
+    <div class="image-preview-wrapper">
+      <div class="image-preview" id="imagePreview">
+        <p>Drag & Drop an Image or Click to Upload</p>
+        <canvas id="canvas"></canvas>
+        <input type="file" id="fileInput" accept="image/*" />
+        <button class="replace-button" id="replaceButton">Upload New Image</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tools-container">
+    <div class="tool-buttons">
+      <button class="tool-button active" id="resizerTool">Resizer</button>
+      <button class="tool-button" id="compressorTool">Compressor</button>
+    </div>
+    <div class="tools-separator"></div>
+
+    <div class="tools" id="resizeTools">
+      <h3>Resize Image</h3>
+      <label for="resizeWidth">Width (px):</label>
+      <input type="number" id="resizeWidth" placeholder="Enter Width" />
+      <label for="resizeHeight">Height (px):</label>
+      <input type="number" id="resizeHeight" placeholder="Enter Height" />
+      <br>
+      <label for="aspectLock" class="aspectlabel">Aspect Ratio:</label>
+      <button id="aspectLock">✘</button>
+      <button onclick="resizeImage()" class="resize-button">Resize</button>
+    </div>
+
+    <div class="tools" id="compressionTools">
+      <h3>Compress Image</h3>
+      <label for="compressionQuality">Quality (0.8 - 1.0):</label>
+      <input type="number" id="compressionQuality" step="0.01" min="0.8" max="1.0" value="0.8" />
+      <br>
+      <p>
+      *Smaller the value, more is the compresssion.</p>
+      <button onclick="compressImage()" class="compress-button">Compress</button>
+    </div>
+  </div>
+</div>
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loader">
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <div class="thankyouoverlay" id="thankyouoverlay">
+  <div id="thankYouScreen" class="popup">
+    <h2>Conversion Successful!</h2>
+    <a id="downloadButton" download="Pixel Morph.png">Download File</a>
+    <button id="convertMoreButton">Convert More Files</button>
+  </div>
+  </div>
+  <script src="cnr.js"></script>
+</body>
+</html>555
