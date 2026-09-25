@@ -1,0 +1,8 @@
+torch
+torchvision
+numpy
+pillow
+spandrel
+fastapi
+uvicorn[standard]
+python-multipart
