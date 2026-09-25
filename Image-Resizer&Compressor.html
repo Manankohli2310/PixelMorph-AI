@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Morph - Image Resizer, Cropper & Compressor</title>
+    <link rel="stylesheet" href="cnr.css" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <meta name="description" content="Resize dimensions, crop to custom aspect ratios, or compress image file size with live telemetry." />
+
+    <!-- External Cropper.js Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+
+<body>
+    <!-- Static Ambient Cyan/Teal Glow Blobs -->
+    <div class="ambient-glow-container" aria-hidden="true">
+        <div class="blob blob-cyan"></div>
+        <div class="blob blob-teal"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand-logo">
+                Pixel<span class="brand-accent">Morph</span>
+            </a>
+
+            <!-- Tiered Hamburger Button (Mobile) -->
+            <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle Menu">
+                <span class="bar bar-top"></span>
+                <span class="bar bar-mid"></span>
+                <span class="bar bar-bot"></span>
+            </button>
+
+            <!-- Nav Menu -->
+            <nav class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <button class="contact-nav-btn">
+                    <a href="mailto:manankohli38@gmail.com?subject=Contact&body=Hi, I wanted to Contact you.">Contact Us</a>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        <div class="content-header">
+            <span class="pill-tag">
+                <span class="pill-dot"></span>
+                Image Optimization Suite
+            </span>
+            <h1 class="main-title">Image Resizer, Cropper & Compressor</h1>
+            <p class="main-subtitle">Resize pixel dimensions, crop to custom ratios, or compress file size with visual telemetry.</p>
+        </div>
+
+        <!-- Mode Switcher Tabs -->
+        <div class="mode-tabs-wrapper">
+            <div class="mode-tabs">
+                <button class="mode-tab active" id="tabResizeCrop">
+                    <span>✂️</span> Resize & Crop
+                </button>
+                <button class="mode-tab" id="tabCompress">
+                    <span>🗜️</span> Compressor
+                </button>
+            </div>
+        </div>
+
+        <!-- File Upload Dropzone (Centered) -->
+        <div class="upload-zone" id="drop-zone">
+            <input type="file" id="fileInput" accept="image/*" hidden />
+            <div class="upload-inner">
+                <div class="upload-icon-wrapper">
+                    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <h3 class="upload-text">Drag & drop your image here</h3>
+                <p class="upload-subtext">or <span class="browse-link">browse files</span> from your computer</p>
+                <div class="upload-meta">
+                    <span>PNG</span>
+                    <span>•</span>
+                    <span>JPG</span>
+                    <span>•</span>
+                    <span>WEBP</span>
+                    <span>•</span>
+                    <span>JFIF</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Card (Appears after upload) -->
+        <div class="controls-card" id="controls-card" style="display: none;">
+            <div class="selected-file-info">
+                <div class="file-name-wrap">
+                    <span class="file-icon">🖼️</span>
+                    <span class="file-name" id="fileNameLabel">image.png</span>
+                </div>
+                <div class="file-meta-badges">
+                    <span class="file-dims" id="fileDimsLabel">0 × 0 px</span>
+                    <span class="file-size-badge" id="fileSizeLabel">0 KB</span>
+                </div>
+            </div>
+
+            <!-- Preview Canvas / Cropper Workspace -->
+            <div class="workspace-container" id="workspaceContainer">
+                <img id="imageElement" alt="Source Image" style="max-width: 100%; display: none;" />
+                <canvas id="previewCanvas"></canvas>
+            </div>
+
+            <!-- =========================================================
+                 PANEL 1: RESIZE & CROP CONTROLS
+                 ========================================================= -->
+            <div id="panelResizeCrop">
+                <!-- Sub-Mode Toggle: Resize vs Crop -->
+                <div class="sub-toggle-wrapper">
+                    <button class="sub-toggle-btn active" id="btnModeResize">📐 Dimension Resizer</button>
+                    <button class="sub-toggle-btn" id="btnModeCrop">✂️ Crop Tool</button>
+                </div>
+
+                <!-- Sub-Section A: Resize Inputs -->
+                <div class="tool-subpanel" id="subpanelResize">
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="resizeWidth">Width (px)</label>
+                            <input type="number" id="resizeWidth" class="styled-input" placeholder="Width" />
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="resizeHeight">Height (px)</label>
+                            <input type="number" id="resizeHeight" class="styled-input" placeholder="Height" />
+                        </div>
+
+                        <div class="setting-item">
+                            <label>Aspect Ratio</label>
+                            <button class="aspect-lock-btn active" id="aspectLockBtn" title="Lock Aspect Ratio">
+                                <span id="aspectLockIcon">🔗 Locked</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Percentage Presets -->
+                    <div class="preset-scale-row">
+                        <span class="preset-label">Quick Scale:</span>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-scale="0.25">25%</button>
+                            <button class="preset-btn" data-scale="0.50">50%</button>
+                            <button class="preset-btn" data-scale="0.75">75%</button>
+                            <button class="preset-btn" data-scale="1.00">100%</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Section B: Cropper Controls -->
+                <div class="tool-subpanel" id="subpanelCrop" style="display: none;">
+                    <div class="crop-presets-wrapper">
+                        <span class="preset-label">Aspect Presets:</span>
+                        <div class="preset-buttons">
+                            <button class="preset-btn active" data-ratio="NaN">Freeform</button>
+                            <button class="preset-btn" data-ratio="1">1:1 Square</button>
+                            <button class="preset-btn" data-ratio="1.777777">16:9 Wide</button>
+                            <button class="preset-btn" data-ratio="1.333333">4:3 Standard</button>
+                            <button class="preset-btn" data-ratio="0.5625">9:16 Story</button>
+                        </div>
+                    </div>
+
+                    <div class="crop-actions-row">
+                        <button class="icon-tool-btn" id="btnRotateLeft" title="Rotate Left 90°">↺ Rotate Left</button>
+                        <button class="icon-tool-btn" id="btnRotateRight" title="Rotate Right 90°">↻ Rotate Right</button>
+                        <button class="icon-tool-btn" id="btnFlipH" title="Flip Horizontal">⇄ Flip H</button>
+                        <button class="icon-tool-btn" id="btnResetCrop" title="Reset Crop Box">Reset Crop</button>
+                    </div>
+                </div>
+
+                <!-- Footer Action -->
+                <div class="controls-footer">
+                    <button class="action-btn secondary-btn" id="resetBtn1">Upload New</button>
+                    <button class="action-btn primary-btn" id="executeResizeCropBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Apply & Download
+                    </button>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 PANEL 2: SMART COMPRESSOR CONTROLS
+                 ========================================================= -->
+            <div id="panelCompress" style="display: none;">
+                <!-- Telemetry Comparison Card -->
+                <div class="compress-stats-panel">
+                    <div class="stat-card">
+                        <span class="stat-label">Original Size</span>
+                        <span class="stat-value" id="statOriginalSize">0 KB</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Estimated Output</span>
+                        <span class="stat-value highlight" id="statCompressedSize">0 KB</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Reduction</span>
+                        <span class="stat-value warm-text" id="statSavings">0% Saved</span>
+                    </div>
+                </div>
+
+                <!-- Quality & Target KB Settings -->
+                <div class="settings-grid">
+                    <div class="setting-item slider-setting">
+                        <div class="label-with-val">
+                            <label for="compressionQuality">Quality Slider</label>
+                            <span class="quality-display-badge" id="qualityDisplay">80%</span>
+                        </div>
+                        <input type="range" id="compressionQuality" min="5" max="100" value="80" class="styled-slider" />
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="targetSizeInput">Target Size Limit (Optional)</label>
+                        <div class="input-with-unit">
+                            <input type="number" id="targetSizeInput" class="styled-input" placeholder="e.g. 150" />
+                            <span class="unit-badge">KB</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="exportFormatSelect">Export Format</label>
+                        <div class="select-container">
+                            <select id="exportFormatSelect">
+                                <option value="image/jpeg" selected>JPG (Best Compression)</option>
+                                <option value="image/webp">WEBP (Modern Efficient)</option>
+                                <option value="image/png">PNG (Lossless)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Action -->
+                <div class="controls-footer">
+                    <button class="action-btn secondary-btn" id="resetBtn2">Upload New</button>
+                    <button class="action-btn primary-btn" id="executeCompressBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Compress & Download
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal Overlay -->
+        <div id="thankYouOverlay" class="thank-you-overlay hidden">
+            <div class="thank-you-content">
+                <div class="success-icon">✓</div>
+                <div class="thankyouconvent1" id="successTitle">File Ready!</div>
+                <p class="success-subtitle" id="successSubtitle">Your optimized image has been processed successfully.</p>
+                <div class="modal-actions">
+                    <a id="downloadButton" class="action-btn primary-btn" download="pixelmorph-optimized.jpg">Download Image</a>
+                    <button id="convertMoreButton" class="action-btn secondary-btn">Optimize Another</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Progress Overlay -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="spinner-wrapper">
+                <div class="spinner-ring"></div>
+                <div class="spinner-glow"></div>
+            </div>
+            <h3 class="loader-title" id="loadingTitle">Processing Image...</h3>
+            <p class="loader-text" id="loadingText">Executing canvas transformations & compression...</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© Pixel Morph | Advanced Image Optimization Engine</p>
+    </footer>
+
+    <script src="cnr.js"></script>
+</body>
+</html>

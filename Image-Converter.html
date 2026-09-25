@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Morph - Smart Image & HEIC Converter</title>
+  <link rel="stylesheet" href="file.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <meta name="description" content="Batch convert multiple images, Apple HEIC/HEIF photos, and icons into PNG, JPG, WEBP, ICO with smart recommendations." />
+
+  <!-- External Libraries: heic2any for Apple HEIC, jszip for Batch ZIP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+
+<body>
+  <!-- Static Ambient Emerald / Mint Glowing Blobs -->
+  <div class="ambient-glow-container" aria-hidden="true">
+    <div class="blob blob-emerald"></div>
+    <div class="blob blob-mint"></div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        Pixel<span class="brand-accent">Morph</span>
+      </a>
+
+      <!-- Tiered Hamburger Button (Mobile) -->
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle Menu">
+        <span class="bar bar-top"></span>
+        <span class="bar bar-mid"></span>
+        <span class="bar bar-bot"></span>
+      </button>
+
+      <!-- Nav Menu -->
+      <nav class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Home</a>
+        <button class="contact-nav-btn">
+          <a href="mailto:manankohli38@gmail.com?subject=Contact&body=Hi, I wanted to Contact you.">Contact Us</a>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+    <div class="content-header">
+      <span class="pill-tag">
+        <span class="pill-dot"></span>
+        Batch Conversion Engine
+      </span>
+      <h1 class="main-title">Smart Image & HEIC Converter</h1>
+      <p class="main-subtitle">Convert multiple images, Apple HEIC/HEIF camera photos, and icons with zero quality loss.</p>
+    </div>
+
+    <!-- Centered Upload Dropzone (Visible on initial state) -->
+    <div class="upload-zone" id="drop-zone">
+      <input type="file" id="fileInput" accept="image/*, .heic, .heif, .avif, .webp, .tiff, .bmp, .ico, .svg" multiple hidden />
+      <div class="upload-inner">
+        <div class="upload-icon-wrapper">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        </div>
+        <h3 class="upload-text">Drag & drop images or HEIC files here</h3>
+        <p class="upload-subtext">or <span class="browse-link">browse files</span> from your computer</p>
+        <div class="upload-meta">
+          <span>Apple HEIC / HEIF supported</span>
+          <span>•</span>
+          <span>Batch multi-image conversion</span>
+          <span>•</span>
+          <span>PNG, JPG, WEBP, AVIF, ICO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Batch Controls Dashboard (Hidden by default, shown ONLY after upload) -->
+    <div class="controls-card" id="controls-card" style="display: none;">
+      <div class="selected-file-info">
+        <div class="file-name-wrap">
+          <span class="file-icon">📁</span>
+          <span class="file-name" id="fileCountLabel">0 files queued</span>
+        </div>
+        <button class="add-more-btn" id="addMoreBtn">+ Add More Files</button>
+      </div>
+
+      <!-- Batch Global Settings Bar -->
+      <div class="batch-settings-bar">
+        <div class="setting-item">
+          <label for="globalFormatSelect">Convert All Files To:</label>
+          <div class="select-container">
+            <select id="globalFormatSelect">
+              <option value="ai" selected>✨ AI Smart Recommend (Auto-Detect Per Image)</option>
+              <option value="avif">AVIF (Next-Gen Ultra Compression)</option>
+              <option value="webp">WEBP (Modern Web Standard)</option>
+              <option value="png">PNG (Lossless & Alpha)</option>
+              <option value="jpg">JPG (Universal Compatibility)</option>
+              <option value="ico">ICO (Windows & Web Favicon)</option>
+              <option value="bmp">BMP (Uncompressed Bitmap)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <label for="resolutionSelect">Output Resolution:</label>
+          <div class="select-container">
+            <select id="resolutionSelect">
+              <option value="original" selected>Original (Preserve Dimensions)</option>
+              <option value="1080p">1080p Full HD</option>
+              <option value="720p">720p HD</option>
+              <option value="480p">480p SD</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Queue List -->
+      <div class="queue-wrapper">
+        <span class="section-micro-label">Conversion Queue (Customize per file if needed):</span>
+        <div class="queue-list" id="queueList"></div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="controls-footer">
+        <button class="action-btn secondary-btn" id="resetBtn">Clear All</button>
+        <button class="action-btn primary-btn" id="convertButton">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Convert All Files
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Modal Overlay -->
+    <div id="thankYouSlide" class="thank-you-slide hidden">
+      <div class="thank-you-message">
+        <div class="success-icon">✓</div>
+        <h2>Conversion Successful!</h2>
+        <p class="success-subtitle" id="successSubtitle">All files have been converted successfully.</p>
+        <div class="modal-actions" id="modalActions">
+          <button id="downloadButton" class="action-btn primary-btn">Download Converted Files</button>
+          <button id="convertMoreButton" class="action-btn secondary-btn">Convert More</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+      <div class="spinner-wrapper">
+        <div class="spinner-ring"></div>
+        <div class="spinner-glow"></div>
+      </div>
+      <h3 class="loader-title" id="loadingTitle">Converting Images...</h3>
+      <p class="loader-text" id="loadingText">Decoding pixels & encoding output formats...</p>
+    </div>
+  </main>
+
+  <!-- Footer (Scroll-Only Visibility) -->
+  <footer class="footer">
+    <p>© Pixel Morph | Advanced Smart Image & HEIC Converter</p>
+  </footer>
+
+  <script src="file.js"></script>
+</body>
+</html>
