@@ -589,3 +589,128 @@ resetPdfBtn.addEventListener('click', () => {
     pdfExtractCard.style.display = 'none';
     pdfDropZone.style.display = 'block';
 });
+
+
+
+
+
+
+
+
+
+
+// =========================================================
+// 8. Themed Custom Dropdowns (wraps native <select>s)
+// =========================================================
+function enhanceSelect(select) {
+    const wrap = select.closest('.select-container') || select.parentElement;
+    wrap.classList.add('custom-select');
+    select.classList.add('native-select-hidden');
+    select.tabIndex = -1;
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'custom-select-trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+
+    const label = document.createElement('span');
+    label.className = 'custom-select-label';
+
+    trigger.appendChild(label);
+    trigger.insertAdjacentHTML('beforeend',
+        '<svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+        'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
+        '<polyline points="6 9 12 15 18 9"></polyline></svg>');
+
+    const menu = document.createElement('ul');
+    menu.className = 'custom-select-menu';
+    menu.setAttribute('role', 'listbox');
+
+    const items = Array.from(select.options).map((opt) => {
+        const li = document.createElement('li');
+        li.className = 'custom-select-option';
+        li.setAttribute('role', 'option');
+        li.dataset.value = opt.value;
+        li.textContent = opt.textContent;
+        li.addEventListener('click', () => {
+            select.value = opt.value;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            close();
+            trigger.focus();
+        });
+        menu.appendChild(li);
+        return li;
+    });
+
+    wrap.appendChild(trigger);
+    wrap.appendChild(menu);
+
+    let activeIdx = -1;
+
+    function sync() {
+        const current = select.options[select.selectedIndex];
+        label.textContent = current ? current.textContent : '';
+        items.forEach((li) => {
+            const on = li.dataset.value === select.value;
+            li.classList.toggle('selected', on);
+            li.setAttribute('aria-selected', on);
+        });
+    }
+
+    function setActive(i) {
+        activeIdx = (i + items.length) % items.length;
+        items.forEach((li, n) => li.classList.toggle('active', n === activeIdx));
+        items[activeIdx].scrollIntoView({ block: 'nearest' });
+    }
+
+    function open() {
+        document.querySelectorAll('.custom-select.open').forEach((el) => {
+            if (el !== wrap) el.classList.remove('open');
+        });
+        wrap.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+        setActive(select.selectedIndex);
+    }
+
+    function close() {
+        wrap.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+        items.forEach((li) => li.classList.remove('active'));
+    }
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        wrap.classList.contains('open') ? close() : open();
+    });
+
+    trigger.addEventListener('keydown', (e) => {
+        const isOpen = wrap.classList.contains('open');
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (!isOpen) open();
+            else setActive(activeIdx + (e.key === 'ArrowDown' ? 1 : -1));
+        } else if ((e.key === 'Enter' || e.key === ' ') && isOpen) {
+            e.preventDefault();
+            items[activeIdx].click();
+        } else if (e.key === 'Escape') {
+            close();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) close();
+    });
+
+    // Keep the UI in sync when code sets select.value (e.g. auto document detection)
+    const nativeValue = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+    Object.defineProperty(select, 'value', {
+        configurable: true,
+        get() { return nativeValue.get.call(this); },
+        set(v) { nativeValue.set.call(this, v); sync(); }
+    });
+
+    sync();
+}
+
+document.querySelectorAll('.select-container select').forEach(enhanceSelect);
